@@ -18,6 +18,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -49,6 +50,27 @@ public class MainActivity extends Activity {
             DLWebPageTask.execute(stringUrl);
         } else {
             textView.setText("No network connection available.");
+        }
+
+        //Sqlite DB testing
+        sqliteDatabaseHandler db = new sqliteDatabaseHandler(this);
+
+        Log.d("Insert: ", "Inserting ..");
+        db.addVenue(new Venue("Eeppinen baari","Survontie 46","Aika jees paikka, mutta haisee koodarille", 64.132,25.51341));
+        db.addVenue(new Venue("Ylämummo","Survontie 32","Joku lätkäpaikka", 64.141,25.51332));
+
+        //Read first venue
+        //Venue venue = db.getVenue(0);
+        //Log.d("One venue", venue.getName() );
+        //Reading all venues
+        Log.d("Reading: ", "Reading all venues..");
+        List<Venue> venues = db.getAllVenues();
+
+        for(Venue vn: venues){
+            String log = "Id: " + vn.getId() + ", Name: " + vn.getName()
+                    + ", Description: " + vn.getDescription() + ", Address: " + vn.getAddress()
+                    + ", Latitude: " + vn.getLatitude() + ", Longitude: " + vn.getLongitude();
+            Log.d("Venue: ",log);
         }
     }
 }
