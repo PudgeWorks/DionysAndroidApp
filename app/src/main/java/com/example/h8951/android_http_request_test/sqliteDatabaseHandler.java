@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,7 @@ public class sqliteDatabaseHandler extends SQLiteOpenHelper {
     }
 
     public Venue getVenue(int id){
+        Log.d("getVenue", "Getting venue "+id);
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_VENUES, new String[] {
@@ -82,7 +84,7 @@ public class sqliteDatabaseHandler extends SQLiteOpenHelper {
         Venue venue = new Venue(Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1), cursor.getString(2), cursor.getString(3) ,Double.parseDouble(cursor.getString(4)),
                 Double.parseDouble(cursor.getString(5)) );
-
+        cursor.close();
         return venue;
     }
 
@@ -99,6 +101,7 @@ public class sqliteDatabaseHandler extends SQLiteOpenHelper {
 
         if(cursor.moveToFirst()){
             do{
+                Log.d("getAllVenues", "Adding venue to list");
                 Venue venue = new Venue();
                 venue.setId(Integer.parseInt(cursor.getString(0)));
                 venue.setName(cursor.getString(1));
@@ -108,7 +111,10 @@ public class sqliteDatabaseHandler extends SQLiteOpenHelper {
                 venue.setLongitude(Double.parseDouble(cursor.getString(5)));
             }
             while (cursor.moveToNext());
+            Log.d("getAllVenues", "Finished adding venues to list");
         }
+        Log.d("getAllVenues", "Returning venuelist");
+        cursor.close();
         return venueList;
     }
 
@@ -116,9 +122,10 @@ public class sqliteDatabaseHandler extends SQLiteOpenHelper {
         String countQuery = "SELECT * FROM " + TABLE_VENUES;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
         cursor.close();
 
-        return  cursor.getCount();
+        return  count;
     }
 
     public int updateVenue(Venue venue){
