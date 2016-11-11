@@ -56,21 +56,23 @@ public class MainActivity extends Activity {
         sqliteDatabaseHandler db = new sqliteDatabaseHandler(this);
 
         Log.d("Insert: ", "Inserting ..");
-        db.addVenue(new Venue("Eeppinen baari","Survontie 46","Aika jees paikka, mutta haisee koodarille", 64.132,25.51341));
-        db.addVenue(new Venue("Ylämummo","Survontie 32","Joku lätkäpaikka", 64.141,25.51332));
+        //db.addVenue(new Venue("Eeppinen baari","Survontie 46","Aika jees paikka, mutta haisee koodarille", 64.132,25.51341));
+        //db.addVenue(new Venue("Ylämummo","Survontie 32","Joku lätkäpaikka", 64.141,25.51332));
 
+        //How many venues do we have
+        Log.d("Number of venues", Integer.toString(db.getVenueCount()));
         //Read first venue
-        //Venue venue = db.getVenue(0);
-        //Log.d("One venue", venue.getName() );
+        Venue venue = db.getVenue(1);
+        Log.d("One venue", venue.getName() + "|" + venue.getDescription() );
         //Reading all venues
-        Log.d("Reading: ", "Reading all venues..");
+        Log.d("Reading", "Reading all venues..");
         List<Venue> venues = db.getAllVenues();
 
         for(Venue vn: venues){
             String log = "Id: " + vn.getId() + ", Name: " + vn.getName()
                     + ", Description: " + vn.getDescription() + ", Address: " + vn.getAddress()
                     + ", Latitude: " + vn.getLatitude() + ", Longitude: " + vn.getLongitude();
-            Log.d("Venue: ",log);
+            Log.d("Venues: ",log);
         }
     }
 }
