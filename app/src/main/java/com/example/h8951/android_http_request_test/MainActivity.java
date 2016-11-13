@@ -43,10 +43,12 @@ import java.util.jar.*;
 import static android.R.attr.targetSdkVersion;
 
 public class MainActivity extends Activity implements
-    ConnectionCallbacks, OnConnectionFailedListener, LocationListener{
+    ConnectionCallbacks, OnConnectionFailedListener, LocationListener, VenuesResponse{
 
+    JSONObject jsonObject;
     private EditText urlText;
     private TextView textView;
+    String response;
     String stringUrl = "http://dionys-rest.azurewebsites.net/api/users";
     http_request.DownloadWebpageTask DLWebPageTask;
 
@@ -69,18 +71,27 @@ public class MainActivity extends Activity implements
         //sitten sisemmästä luokasta olio
         // kutsumalla new ulomman olion alta.
 
-        http_request HTTPRequest = new http_request(this);
-        http_request.DownloadWebpageTask DLWebPageTask = HTTPRequest.new DownloadWebpageTask();
+        test_async test = new test_async(this);
 
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
         if (networkInfo != null && networkInfo.isConnected()) {
-            Log.d("Nettiyhteys löytyy.", "tööt");
-            DLWebPageTask.execute(stringUrl);
+            textView.setText("Network connection found!");
+
+            //DLWebPageTask.execute(stringUrl);
+
+            test.execute(stringUrl);
+
         } else {
             textView.setText("No network connection available.");
+        }
+
+        public void VenuesResponse(List<Venue> venues){
+
+            for(Venue venue : venues) {
+                Log.d("Name for venue:", venue.getName());
+            }
         }
 
         //Sqlite DB testing
