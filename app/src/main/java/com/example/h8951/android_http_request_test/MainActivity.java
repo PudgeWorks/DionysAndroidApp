@@ -49,6 +49,11 @@ public class MainActivity extends Activity implements
 
     private final int REQUEST_LOCATION = 1;
 
+    private SqliteDatabaseHandler db;
+
+    Location currentLocation;
+    //Test stuff
+    Venue testVenue;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +81,7 @@ public class MainActivity extends Activity implements
         }
 
         //Sqlite DB testing
-        SqliteDatabaseHandler db = new SqliteDatabaseHandler(this);
+        db = new SqliteDatabaseHandler(this);
 
         Log.d("Insert: ", "Inserting ..");
         //db.addVenue(new Venue("Eeppinen baari","Survontie 46","Aika jees paikka, mutta haisee koodarille", 64.132,25.51341));
@@ -86,6 +91,7 @@ public class MainActivity extends Activity implements
         Log.d("Number of venues", Integer.toString(db.getVenueCount()));
         //Read first venue
         Venue venue = db.getVenue(1);
+        testVenue = venue;
         Log.d("One venue", venue.getName() + "|" + venue.getDescription() );
         //Reading all venues
         Log.d("Reading", "Reading all venues..");
@@ -148,6 +154,29 @@ public class MainActivity extends Activity implements
         // show location in TextViews
         mLatitudeText.setText("Latitude: " + location.getLatitude());
         mLongitudeText.setText("Latitude: " + location.getLongitude());
+        currentLocation = location;
+
+        //Testing distanceTo
+        amIthereYet();
+    }
+
+    private void amIthereYet(){
+        GpsHelper gpsHelper = new GpsHelper();
+        Location remoteLocation = new Location(testVenue.getName());
+        remoteLocation.setLatitude(testVenue.getLatitude());
+        remoteLocation.setLongitude(testVenue.getLongitude());
+
+        /*currentLocation = new Location("CurrentLocation");
+        currentLocation.setLatitude(64);
+        currentLocation.setLongitude(25);*/
+        //textView.setText(Double.toString(currentLocation.getLatitude()) +","+ Double.toString(currentLocation.getLongitude()));
+        Log.d("CurrentLocation",Double.toString(currentLocation.getLatitude()) +","+ Double.toString(currentLocation.getLongitude()));
+        Log.d("RemoteLocation",Double.toString(remoteLocation.getLatitude()) +","+ Double.toString(remoteLocation.getLongitude()) );
+        float distanceToRemote = gpsHelper.calculateDistanceTo(currentLocation,remoteLocation);
+        Log.d("Dionys","Distance to " + testVenue.getName() + " is " + distanceToRemote);
+
+        if(distanceToRemote < 500f)
+            textView.setText("You've arrived to: " + testVenue.getName());
     }
 
     //Checking location permission
@@ -219,7 +248,8 @@ public class MainActivity extends Activity implements
     public void VenuesResponse(List<Venue> venues){
 
         for(Venue venue : venues) {
-            Log.d("Name for venue:", venue.getName());
+            Log.d("Name for venue", venue.getName());
+            db.addVenue(venue);
         }
     }
 
