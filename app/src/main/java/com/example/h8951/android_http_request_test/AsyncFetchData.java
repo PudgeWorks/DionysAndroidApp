@@ -4,9 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +18,7 @@ import java.util.List;
     // has been established, the AsyncTask downloads the contents of the webpage as
     // an InputStream. Finally, the InputStream is converted into a string, which is
     // displayed in the UI by the AsyncTask's onPostExecute method.
-    public class test_async extends AsyncTask<String, Void, String> {
+    public class AsyncFetchData extends AsyncTask<String, Void, String> {
 
         private String debugString = "nada";
         private String debugString2 = "nudu";
@@ -28,13 +26,13 @@ import java.util.List;
         private JSONConverter converter = new JSONConverter();
         private String JSONData;
         private TextView myView;
-        download_url testi = new download_url ();
+        DownloadUrl testi = new DownloadUrl();
         private List<Venue> localVenues = new ArrayList<>();
         VenuesResponse connectorToMainActivity;
         protected MainActivity context;
 
 
-        public test_async(MainActivity context){
+        public AsyncFetchData(MainActivity context){
 
             connectorToMainActivity = context;
             this.context = context;

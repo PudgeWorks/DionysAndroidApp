@@ -12,7 +12,7 @@ import java.net.URL;
  * Created by Aleksi on 12.11.2016.
  */
 
-public class download_url {
+public class DownloadUrl {
 
     // Given a URL, establishes an HttpUrlConnection and retrieves
 // the web page content as a InputStream, which it returns as

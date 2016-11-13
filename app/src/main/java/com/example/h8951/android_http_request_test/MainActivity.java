@@ -1,6 +1,5 @@
 package com.example.h8951.android_http_request_test;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -8,16 +7,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,15 +26,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import org.json.JSONObject;
+
 import java.util.List;
-import java.util.jar.*;
 
 import static android.R.attr.targetSdkVersion;
 
@@ -49,9 +39,7 @@ public class MainActivity extends Activity implements
     private EditText urlText;
     private TextView textView;
     String response;
-    String stringUrl = "http://dionys-rest.azurewebsites.net/api/users";
-    http_request.DownloadWebpageTask DLWebPageTask;
-
+    String stringUrl = "http://dionys-rest.azurewebsites.net/api/venues";
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -71,7 +59,7 @@ public class MainActivity extends Activity implements
         //sitten sisemmästä luokasta olio
         // kutsumalla new ulomman olion alta.
 
-        test_async test = new test_async(this);
+        AsyncFetchData test = new AsyncFetchData(this);
 
         ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -87,19 +75,12 @@ public class MainActivity extends Activity implements
             textView.setText("No network connection available.");
         }
 
-        public void VenuesResponse(List<Venue> venues){
-
-            for(Venue venue : venues) {
-                Log.d("Name for venue:", venue.getName());
-            }
-        }
-
         //Sqlite DB testing
-        sqliteDatabaseHandler db = new sqliteDatabaseHandler(this);
+        SqliteDatabaseHandler db = new SqliteDatabaseHandler(this);
 
         Log.d("Insert: ", "Inserting ..");
-        db.addVenue(new Venue("Eeppinen baari","Survontie 46","Aika jees paikka, mutta haisee koodarille", 64.132,25.51341));
-        db.addVenue(new Venue("Ylämummo","Survontie 32","Joku lätkäpaikka", 64.141,25.51332));
+        //db.addVenue(new Venue("Eeppinen baari","Survontie 46","Aika jees paikka, mutta haisee koodarille", 64.132,25.51341));
+        //db.addVenue(new Venue("Ylämummo","Survontie 32","Joku lätkäpaikka", 64.141,25.51332));
 
         //How many venues do we have
         Log.d("Number of venues", Integer.toString(db.getVenueCount()));
@@ -110,12 +91,12 @@ public class MainActivity extends Activity implements
         Log.d("Reading", "Reading all venues..");
         List<Venue> venues = db.getAllVenues();
 
-        for(Venue vn: venues){
+        /*for(Venue vn: venues){
             String log = "Id: " + vn.getId() + ", Name: " + vn.getName()
                     + ", Description: " + vn.getDescription() + ", Address: " + vn.getAddress()
                     + ", Latitude: " + vn.getLatitude() + ", Longitude: " + vn.getLongitude();
             Log.d("Venues: ",log);
-        }
+        }*/
 
         //Getting debug textviews
         mLatitudeText = (TextView) findViewById(R.id.latitude);
@@ -233,6 +214,13 @@ public class MainActivity extends Activity implements
             );
 
 
+    }
+
+    public void VenuesResponse(List<Venue> venues){
+
+        for(Venue venue : venues) {
+            Log.d("Name for venue:", venue.getName());
+        }
     }
 
 }
