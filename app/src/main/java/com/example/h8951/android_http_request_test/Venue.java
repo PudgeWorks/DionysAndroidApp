@@ -17,7 +17,7 @@ public class Venue {
     public Venue(){}
 
     //Constructor
-    public Venue(int id, String name, String address,String desc, double lati, double longi){
+    public Venue(int id, String name, String address, String desc, double lati, double longi){
         this._id = id;
         this._name = name;
         this._address = address;
