@@ -18,17 +18,22 @@ import java.util.List;
     // has been established, the AsyncTask downloads the contents of the webpage as
     // an InputStream. Finally, the InputStream is converted into a string, which is
     // displayed in the UI by the AsyncTask's onPostExecute method.
-    public class AsyncFetchData extends AsyncTask<String, Void, String> {
+    public class AsyncFetchData extends AsyncTask< String, Void, String> {
 
         private String debugString = "nada";
         private String debugString2 = "nudu";
+        private String debugString3 = "nidi";
+        private String debugString4 = "nodo";
+        private String debugString5 = "doro";
+        boolean isVenues;
         Exception ex;
         private JSONConverter converter = new JSONConverter();
         private String JSONData;
         private TextView myView;
         DownloadUrl testi = new DownloadUrl();
         private List<Venue> localVenues = new ArrayList<>();
-        VenuesResponse connectorToMainActivity;
+        private List<User> localUsers = new ArrayList<>();
+        JSONResponse connectorToMainActivity;
         protected MainActivity context;
 
 
@@ -40,14 +45,25 @@ import java.util.List;
         }
 
         @Override
-        protected String doInBackground(String... urls) {
-
+        protected String doInBackground(String... params) {
+            // params[0] is the url, params[1] is the conversion type, user/venue
             // params comes from the execute() call: params[0] is the url.
             try {
-                JSONData = testi.downloadUrl(urls[0]);
+                JSONData = testi.downloadUrl(params[0]);
                 debugString = JSONData;
-                localVenues = converter.convertJSONToVenue(JSONData);
+
+                if(params[1] == "venues"){
+                    isVenues = true;
+                    debugString3 = "Calling converto to Venues from doinbackground...";
+                    localVenues = converter.convertJSONToVenue(JSONData);
+                } else if (params[1] == "users"){
+                    isVenues = false;
+                    debugString3 = "Calling converto to Users from doinbackground...";
+                    localUsers = converter.convertJSONToUser(JSONData);
+                }
+
                 debugString2 = Integer.toString(localVenues.size());
+                debugString4 = Integer.toString(localUsers.size());
 
                 return "JSON converted successfully";
 
@@ -67,6 +83,8 @@ import java.util.List;
 
             Log.d("JSON: ", debugString );
             Log.d("localVenuesin koko: ", debugString2 );
+            Log.d("localUsersin koko: ", debugString4 );
+            Log.d("value of isVenues: ", "" + isVenues);
 
             if(localVenues == null){
                 Log.d("ERROR:", "local venues is empty before interface invocation!");
@@ -74,7 +92,11 @@ import java.util.List;
                 Log.d("SUCCESS:", "local venues is filled and going to interface invocation!");
             }
 
-            connectorToMainActivity.VenuesResponse(localVenues);
+            if(isVenues) {
+                connectorToMainActivity.VenuesResponse(localVenues);
+            } else {
+                connectorToMainActivity.UsersResponse(localUsers);
+            }
             context.runOnUiThread(new Runnable() {
 
                 @Override

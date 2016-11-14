@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DnysAndroid.iml" filepath="$PROJECT_DIR$/DnysAndroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DionysAndroidApp.iml" filepath="$PROJECT_DIR$/DionysAndroidApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

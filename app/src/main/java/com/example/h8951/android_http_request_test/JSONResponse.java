@@ -6,6 +6,7 @@ import java.util.List;
  * Created by Aleksi on 11.11.2016.
  */
 
-public interface VenuesResponse {
-    void VenuesResponse(List<Venue> courses);
+public interface JSONResponse {
+    void VenuesResponse(List<Venue> venues);
+    void UsersResponse(List<User> users);
 }

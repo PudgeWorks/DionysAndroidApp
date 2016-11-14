@@ -34,5 +34,45 @@
         android:layout_below="@+id/latitude"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mockLat"
+        android:text="mock latitude here"
+        android:layout_below="@+id/longitude"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mockLong"
+        android:text="mock longitude here"
+        android:layout_below="@+id/mockLat"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/atVenue"
+        android:text="Users at location: "
+        android:layout_below="@+id/mockLong"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/users"
+        android:text="Users at location: "
+        android:layout_below="@+id/atVenue"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/usersMultiline"
+        android:layout_below="@+id/users"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

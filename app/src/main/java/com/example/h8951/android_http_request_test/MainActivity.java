@@ -25,46 +25,64 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.vision.text.Text;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.R.attr.targetSdkVersion;
 
 public class MainActivity extends Activity implements
-    ConnectionCallbacks, OnConnectionFailedListener, LocationListener, VenuesResponse{
+    ConnectionCallbacks, OnConnectionFailedListener, LocationListener, JSONResponse {
 
     JSONObject jsonObject;
     private EditText urlText;
     private TextView textView;
+    private TextView usersTextView;
+    private EditText usersMultiline;
     String response;
-    String stringUrl = "http://dionys-rest.azurewebsites.net/api/venues";
+    String urlVenues = "http://dionys-rest.azurewebsites.net/api/venues";
+    String urlUsers = "http://dionys-rest.azurewebsites.net/api/users";
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
     private TextView mLatitudeText;
     private TextView mLongitudeText;
+    private TextView mockCoordinatesLat;
+    private TextView mockCoordinatesLong;
+    private TextView location;
 
     private final int REQUEST_LOCATION = 1;
 
     private SqliteDatabaseHandler db;
 
     Location currentLocation;
+    Location mockLocation = new Location("MockLocation");
     //Test stuff
     Venue testVenue;
+    List<User> localUsers = new ArrayList<>();
+    List<Venue> localVenues = new ArrayList<>();
+
+    AsyncFetchData test;
+    AsyncFetchData getUsers;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = (TextView) findViewById(R.id.myText);
+        usersTextView = (TextView) findViewById(R.id.users);
+        mockCoordinatesLat = (TextView) findViewById(R.id.mockLat);
+        mockCoordinatesLong = (TextView) findViewById(R.id.mockLong);
+        usersMultiline = (EditText) findViewById(R.id.usersMultiline);
+        location = (TextView) findViewById(R.id.atVenue);
 
         //ensin tehdään ulommasta luokasta olio (HTTPRequest)
         //sitten sisemmästä luokasta olio
         // kutsumalla new ulomman olion alta.
-
-        AsyncFetchData test = new AsyncFetchData(this);
 
         ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -73,8 +91,9 @@ public class MainActivity extends Activity implements
             textView.setText("Network connection found!");
 
             //DLWebPageTask.execute(stringUrl);
-
-            test.execute(stringUrl);
+            test = new AsyncFetchData(this);
+            test.execute(urlVenues,"venues");
+            Log.d("STATUS:", "Out of async for venues.");
 
         } else {
             textView.setText("No network connection available.");
@@ -90,12 +109,12 @@ public class MainActivity extends Activity implements
         //How many venues do we have
         Log.d("Number of venues", Integer.toString(db.getVenueCount()));
         //Read first venue
-        Venue venue = db.getVenue(1);
-        testVenue = venue;
-        Log.d("One venue", venue.getName() + "|" + venue.getDescription() );
+        //Venue venue = db.getVenue(1);
+        //testVenue = venue;
+        //Log.d("One venue", venue.getName() + "|" + venue.getDescription() );
         //Reading all venues
-        Log.d("Reading", "Reading all venues..");
-        List<Venue> venues = db.getAllVenues();
+        //Log.d("Reading", "Reading all venues..");
+        //localVenues = db.getAllVenues();
 
         /*for(Venue vn: venues){
             String log = "Id: " + vn.getId() + ", Name: " + vn.getName()
@@ -114,6 +133,7 @@ public class MainActivity extends Activity implements
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
     }
 
     @Override
@@ -153,30 +173,48 @@ public class MainActivity extends Activity implements
     public void onLocationChanged(Location location) {
         // show location in TextViews
         mLatitudeText.setText("Latitude: " + location.getLatitude());
-        mLongitudeText.setText("Latitude: " + location.getLongitude());
+        mLongitudeText.setText("Longitude: " + location.getLongitude());
         currentLocation = location;
-
         //Testing distanceTo
-        amIthereYet();
+        //amIthereYet();
     }
 
-    private void amIthereYet(){
+    private boolean amIthereYet(String name, Double latitude, Double longitude){
         GpsHelper gpsHelper = new GpsHelper();
-        Location remoteLocation = new Location(testVenue.getName());
-        remoteLocation.setLatitude(testVenue.getLatitude());
-        remoteLocation.setLongitude(testVenue.getLongitude());
+        //Location remoteLocation = new Location(testVenue.getName());
+        //remoteLocation.setLatitude(testVenue.getLatitude());
+        //remoteLocation.setLongitude(testVenue.getLongitude());
+
+        mockLocation.setLatitude(62.2439552);
+        mockLocation.setLongitude(25.7482088);
+
+        mockCoordinatesLat.setText("Mock longitude: " + Double.toString(mockLocation.getLatitude()));
+        mockCoordinatesLong.setText("Mock latitude: " + Double.toString(mockLocation.getLongitude()));
+
+        Location remoteLocation = new Location(name);
+        remoteLocation.setLatitude(latitude);
+        remoteLocation.setLongitude(longitude);
 
         /*currentLocation = new Location("CurrentLocation");
         currentLocation.setLatitude(64);
         currentLocation.setLongitude(25);*/
         //textView.setText(Double.toString(currentLocation.getLatitude()) +","+ Double.toString(currentLocation.getLongitude()));
-        Log.d("CurrentLocation",Double.toString(currentLocation.getLatitude()) +","+ Double.toString(currentLocation.getLongitude()));
-        Log.d("RemoteLocation",Double.toString(remoteLocation.getLatitude()) +","+ Double.toString(remoteLocation.getLongitude()) );
-        float distanceToRemote = gpsHelper.calculateDistanceTo(currentLocation,remoteLocation);
-        Log.d("Dionys","Distance to " + testVenue.getName() + " is " + distanceToRemote);
 
-        if(distanceToRemote < 500f)
-            textView.setText("You've arrived to: " + testVenue.getName());
+//        Log.d("CurrentLocation",Double.toString(currentLocation.getLatitude()) +","+ Double.toString(currentLocation.getLongitude()));
+  //      Log.d("RemoteLocation",Double.toString(remoteLocation.getLatitude()) +","+ Double.toString(remoteLocation.getLongitude()) );
+
+        //float distanceToRemote = gpsHelper.calculateDistanceTo(currentLocation,remoteLocation);
+        float distanceToRemote = gpsHelper.calculateDistanceTo(mockLocation,remoteLocation);
+        Log.d("Dionys","Distance to " + name + " is " + distanceToRemote);
+
+        if(distanceToRemote < 500f) {
+            textView.setText("You've arrived to: " + name);
+            location.setText("You are at: " + name);
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     //Checking location permission
@@ -247,10 +285,56 @@ public class MainActivity extends Activity implements
 
     public void VenuesResponse(List<Venue> venues){
 
+        localVenues = venues;
+
         for(Venue venue : venues) {
             Log.d("Name for venue", venue.getName());
-            db.addVenue(venue);
+            //db.addVenue(venue);
         }
+        compareCoordinates();
+    }
+
+    public void UsersResponse(List<User> users){
+
+        int amountAtVenue = 0;
+
+        for(User user : users) {
+            Log.d("Name for user", user.getFname());
+            amountAtVenue++;
+            usersMultiline.append("\n" + user.getFname());
+            //db.addUser(user);
+            localUsers.add(user);
+        }
+
+        usersTextView.setText(usersTextView.getText() + Integer.toString(amountAtVenue));
+    }
+
+    public void compareCoordinates(){
+
+        Log.d("STATUS: ", "in compareCoordinates");
+
+        //localVenues = db.getAllVenues();
+        boolean atLocation = false;
+        int whichLocation = 0;
+
+        Log.d("Size of localVenues", Integer.toString(localVenues.size()));
+        for(Venue venue : localVenues){
+            Log.d("STATUS: ", "checking venues...");
+            Log.d("STATUS: ", "");
+          atLocation = amIthereYet(venue.getName(), venue.getLatitude(), venue.getLongitude());
+            if(atLocation == true ){
+                whichLocation = venue.getId();
+                break;
+            }
+        }
+       getUsers = new AsyncFetchData(this);
+
+        if(atLocation == true){
+            urlUsers = urlUsers + "/" + whichLocation;
+            Log.d("urlUsers: ", urlUsers);
+            getUsers.execute(urlUsers, "users");
+        }
+
     }
 
 }
