@@ -15,11 +15,12 @@ import java.net.URL;
 public class DownloadUrl {
 
     // Given a URL, establishes an HttpUrlConnection and retrieves
-// the web page content as a InputStream, which it returns as
-// a string.
+    // the web page content as a InputStream, which it returns as
+    // a string.
+
     public String downloadUrl(String myurl) throws IOException {
         InputStream is = null;
-        // Only display the first 500 characters of the retrieved
+        // Only display the first 1500 characters of the retrieved
         // web page content.
         int len = 1500;
 

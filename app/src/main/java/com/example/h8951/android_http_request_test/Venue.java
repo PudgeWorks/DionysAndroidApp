@@ -25,6 +25,7 @@ public class Venue {
         this._lati = lati;
         this._longi = longi;
     }
+    //Overload
     public Venue(String name, String address,String desc, double lati, double longi){
         this._name = name;
         this._address = address;

@@ -39,14 +39,6 @@ public class User {
         this._venue = venue;
     }
 
-   /* public Venue(String name, String address,String desc, double lati, double longi){
-        this._name = name;
-        this._address = address;
-        this._desc = desc;
-        this._lati = lati;
-        this._longi = longi;
-    }*/
-
     //public void setId(int id){ this._id = id;}
     public int getId(){return _id;}
 

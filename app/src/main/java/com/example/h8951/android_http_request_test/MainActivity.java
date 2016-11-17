@@ -77,12 +77,10 @@ public class MainActivity extends Activity implements
         usersTextView = (TextView) findViewById(R.id.users);
         mockCoordinatesLat = (TextView) findViewById(R.id.mockLat);
         mockCoordinatesLong = (TextView) findViewById(R.id.mockLong);
+        mLatitudeText = (TextView) findViewById(R.id.latitude);
+        mLongitudeText = (TextView) findViewById(R.id.longitude);
         usersMultiline = (EditText) findViewById(R.id.usersMultiline);
         location = (TextView) findViewById(R.id.atVenue);
-
-        //ensin tehdään ulommasta luokasta olio (HTTPRequest)
-        //sitten sisemmästä luokasta olio
-        // kutsumalla new ulomman olion alta.
 
         ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -90,7 +88,6 @@ public class MainActivity extends Activity implements
         if (networkInfo != null && networkInfo.isConnected()) {
             textView.setText("Network connection found!");
 
-            //DLWebPageTask.execute(stringUrl);
             test = new AsyncFetchData(this);
             test.execute(urlVenues,"venues");
             Log.d("STATUS:", "Out of async for venues.");
@@ -99,15 +96,11 @@ public class MainActivity extends Activity implements
             textView.setText("No network connection available.");
         }
 
-        //Sqlite DB testing
         db = new SqliteDatabaseHandler(this);
-
-        Log.d("Insert: ", "Inserting ..");
-        //db.addVenue(new Venue("Eeppinen baari","Survontie 46","Aika jees paikka, mutta haisee koodarille", 64.132,25.51341));
-        //db.addVenue(new Venue("Ylämummo","Survontie 32","Joku lätkäpaikka", 64.141,25.51332));
 
         //How many venues do we have
         Log.d("Number of venues", Integer.toString(db.getVenueCount()));
+
         //Read first venue
         //Venue venue = db.getVenue(1);
         //testVenue = venue;
@@ -123,11 +116,7 @@ public class MainActivity extends Activity implements
             Log.d("Venues: ",log);
         }*/
 
-        //Getting debug textviews
-        mLatitudeText = (TextView) findViewById(R.id.latitude);
-        mLongitudeText = (TextView) findViewById(R.id.longitude);
-
-        //Build google Play services clinet
+        //Build google Play services client
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -171,19 +160,17 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onLocationChanged(Location location) {
-        // show location in TextViews
+
         mLatitudeText.setText("Latitude: " + location.getLatitude());
         mLongitudeText.setText("Longitude: " + location.getLongitude());
         currentLocation = location;
-        //Testing distanceTo
-        //amIthereYet();
+
+        //amIthereYet();    //tarvitsee ajastimen sijainnin tarkistusten välillä. Ehkä 10 min?
     }
 
     private boolean amIthereYet(String name, Double latitude, Double longitude){
+
         GpsHelper gpsHelper = new GpsHelper();
-        //Location remoteLocation = new Location(testVenue.getName());
-        //remoteLocation.setLatitude(testVenue.getLatitude());
-        //remoteLocation.setLongitude(testVenue.getLongitude());
 
         mockLocation.setLatitude(62.2439552);
         mockLocation.setLongitude(25.7482088);
@@ -195,15 +182,6 @@ public class MainActivity extends Activity implements
         remoteLocation.setLatitude(latitude);
         remoteLocation.setLongitude(longitude);
 
-        /*currentLocation = new Location("CurrentLocation");
-        currentLocation.setLatitude(64);
-        currentLocation.setLongitude(25);*/
-        //textView.setText(Double.toString(currentLocation.getLatitude()) +","+ Double.toString(currentLocation.getLongitude()));
-
-//        Log.d("CurrentLocation",Double.toString(currentLocation.getLatitude()) +","+ Double.toString(currentLocation.getLongitude()));
-  //      Log.d("RemoteLocation",Double.toString(remoteLocation.getLatitude()) +","+ Double.toString(remoteLocation.getLongitude()) );
-
-        //float distanceToRemote = gpsHelper.calculateDistanceTo(currentLocation,remoteLocation);
         float distanceToRemote = gpsHelper.calculateDistanceTo(mockLocation,remoteLocation);
         Log.d("Dionys","Distance to " + name + " is " + distanceToRemote);
 
@@ -214,7 +192,6 @@ public class MainActivity extends Activity implements
         } else {
             return false;
         }
-
     }
 
     //Checking location permission
@@ -243,7 +220,7 @@ public class MainActivity extends Activity implements
         int hasLocationPermission = ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
         // permission is not granted yet
         if (hasLocationPermission != PackageManager.PERMISSION_GRANTED) {
-            // ask it -> a dialog will be opened
+            // ask permission, a dialog will be opened
             ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         } else {
             Log.d("checkPermissions", "let's get location");
@@ -272,7 +249,7 @@ public class MainActivity extends Activity implements
     private void startGettingLocation(){
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(5000); //in miliseconds
+        mLocationRequest.setInterval(5000); //in milliseconds
 
         int hasLocationPermission = ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION);
         if(hasLocationPermission == PackageManager.PERMISSION_GRANTED)
@@ -289,7 +266,7 @@ public class MainActivity extends Activity implements
 
         for(Venue venue : venues) {
             Log.d("Name for venue", venue.getName());
-            //db.addVenue(venue);
+            //db.addVenue(venue);       //sqlite lukemisessa vielä jotain häikkää. Lukeminen tehdään tällä hetkellä suoraan ajon aikaisesta oliokokoelmasta.
         }
         compareCoordinates();
     }
@@ -302,7 +279,7 @@ public class MainActivity extends Activity implements
             Log.d("Name for user", user.getFname());
             amountAtVenue++;
             usersMultiline.append("\n" + user.getFname());
-            //db.addUser(user);
+            //db.addUser(user);         //sqlite lukemisessa vielä jotain häikkää. Lukeminen tehdään tällä hetkellä suoraan ajon aikaisesta oliokokoelmasta.
             localUsers.add(user);
         }
 
@@ -313,7 +290,7 @@ public class MainActivity extends Activity implements
 
         Log.d("STATUS: ", "in compareCoordinates");
 
-        //localVenues = db.getAllVenues();
+        //localVenues = db.getAllVenues();   //sqlite lukemisessa vielä jotain häikkää. Lukeminen tehdään tällä hetkellä suoraan ajon aikaisesta oliokokoelmasta.
         boolean atLocation = false;
         int whichLocation = 0;
 
