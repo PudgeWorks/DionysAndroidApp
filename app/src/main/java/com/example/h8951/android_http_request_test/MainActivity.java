@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,9 +27,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.vision.text.Text;
+import com.google.firebase.storage.UploadTask;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -311,6 +314,16 @@ public class MainActivity extends Activity implements
             Log.d("urlUsers: ", urlUsers);
             getUsers.execute(urlUsers, "users");
         }
+
+    }
+    public void demoButtonClicked(View view){
+        User user = localUsers.get(1);
+        String currentVenueId = Integer.toString(user.getVenue());
+        String venueId = "11";
+        String url = urlUsers;
+        String user_nick = user.getNick();
+        AsyncPutData putData = new AsyncPutData(this);
+        putData.execute(url,"nick",user_nick,"venue_key",venueId);
 
     }
 
