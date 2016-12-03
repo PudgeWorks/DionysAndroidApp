@@ -101,7 +101,7 @@ import java.util.List;
                 @Override
                 public void run() {
 
-                    myView.setText(result);
+                   // myView.setText(result);
 
                 }
             });
