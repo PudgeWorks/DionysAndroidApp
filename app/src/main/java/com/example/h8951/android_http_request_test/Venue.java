@@ -1,10 +1,13 @@
 package com.example.h8951.android_http_request_test;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Eurybus on 11.11.2016.
  */
 
-public class Venue {
+public class Venue implements Parcelable {
 
     //private variables
     int _id;
@@ -33,6 +36,51 @@ public class Venue {
         this._lati = lati;
         this._longi = longi;
     }
+
+
+
+    public static final Parcelable.Creator CREATOR =
+            new Parcelable.Creator() {
+                public Venue createFromParcel(Parcel in) {
+                    return new Venue(in);
+                }
+
+                public Venue[] newArray(int size) {
+                    return new Venue[size];
+                }
+            };
+
+    @Override
+    public int  describeContents(){return 0;}
+
+    @Override
+    public void writeToParcel(Parcel dest, int i){
+        dest.writeInt(_id);
+        dest.writeString(_name);
+        dest.writeString(_address);
+        dest.writeString(_desc);
+        dest.writeDouble(_lati);
+        dest.writeDouble(_longi);
+    }
+
+    public Venue(Parcel in){
+
+        this._id = in.readInt();
+        this._name = in.readString();
+        this._address = in.readString();
+        this._desc = in.readString();
+        this._lati = in.readDouble();
+        this._longi = in.readDouble();
+
+    }
+    //Adapter constructor, get data from activity
+    public routeSegmentAdapter(Activity context, List<routeSegment> routeSegmentList) {
+        this.routeSegmentList = routeSegmentList;
+        this.context = context;
+        Log.d("routeSegmentAdapter", "started");
+    }
+
+
 
     public void setId(int id){ this._id = id;}
     public int getId(){return _id;}

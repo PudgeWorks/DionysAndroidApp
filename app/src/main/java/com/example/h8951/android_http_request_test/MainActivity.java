@@ -82,16 +82,18 @@ public class MainActivity extends Activity implements
     FragmentUsers FragUsers = new FragmentUsers();
     FragmentDebug FragDebug = new FragmentDebug();
 
-    Bundle bundle = new Bundle();
+    Bundle bundleDebug = new Bundle();
+    Bundle bundleVenues = new Bundle();
 
-    boolean bundleSetArgumentsDoOnce = false;
+    boolean bundleSetArgumentsDoOnceDebug = false;
+    boolean bundleSetArgumentsDoOnceVenues = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bundle.putBoolean("asyncDone", false);
+        bundleDebug.putBoolean("asyncDone", false);
 
         FragMan = getFragmentManager();
         FragTrans = FragMan.beginTransaction();
@@ -205,29 +207,31 @@ public class MainActivity extends Activity implements
         }
         else
         {
-            // consider as something else - a screen tap for example
+            // jotain muuta kuin swipe
         }
     }
 
-    public void selectFragment(boolean right){
-
+    public void selectFragment(boolean right){          //right = oikea swipe, else = vasen swipe
+                                                        //oikea swipe = debug fragment, vasen swipe = venues fragment
         if (right){
                                                         //set argumentsia ei voi käyttää useammin kuin kerran yhteen fragmenttiin.
-            if(!bundleSetArgumentsDoOnce){              //Tarkastetaan onko sitä käytetty kerran ja muutetaan kerran asetettuja arvoja
-                FragDebug.setArguments(bundle);         //getArgumentsin kautta jos on.
-                bundleSetArgumentsDoOnce = true;
+            if(!bundleSetArgumentsDoOnceDebug){              //Tarkastetaan onko sitä käytetty kerran ja muutetaan kerran asetettuja arvoja
+                FragDebug.setArguments(bundleDebug);         //getArgumentsin kautta jos on.
+                bundleSetArgumentsDoOnceDebug = true;
             } else {
-                FragDebug.getArguments().putString();
-                FragDebug.getArguments().putString();
-                FragDebug.getArguments().putString();
-                FragDebug.getArguments().putString();
-
-                //KESKEN
+                FragDebug.getArguments().putAll(bundleDebug);
             }
             FragTrans = FragMan.beginTransaction();
             FragTrans.replace(R.id.visibleFragment, FragDebug );
             FragTrans.commit();
         } else {
+            if(!bundleSetArgumentsDoOnceVenues){              //Tarkastetaan onko sitä käytetty kerran ja muutetaan kerran asetettuja arvoja
+                FragVenues.setArguments(bundleVenues);         //getArgumentsin kautta jos on.
+                bundleSetArgumentsDoOnceVenues = true;
+            } else {
+                FragVenues.getArguments().putAll(bundleVenues);
+            }
+
             FragTrans = FragMan.beginTransaction();
             FragTrans.replace(R.id.visibleFragment, FragVenues );
             FragTrans.commit();
@@ -269,8 +273,8 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onLocationChanged(Location location) {
-        bundle.putString("realLat", "Latitude: " + location.getLatitude());
-        bundle.putString("realLong", "Longitude: " + location.getLongitude());
+        bundleDebug.putString("realLat", "Latitude: " + location.getLatitude());
+        bundleDebug.putString("realLong", "Longitude: " + location.getLongitude());
         //mLatitudeText.setText("Latitude: " + location.getLatitude());
         //mLongitudeText.setText("Longitude: " + location.getLongitude());
         currentLocation = location;
@@ -285,8 +289,8 @@ public class MainActivity extends Activity implements
         mockLocation.setLatitude(62.2439552);
         mockLocation.setLongitude(25.7482088);
 
-        bundle.putString("mockLat", "Mock latitude: " + Double.toString(mockLocation.getLatitude()));
-        bundle.putString("mockLong", "Mock longitude: " + Double.toString(mockLocation.getLongitude()));
+        bundleDebug.putString("mockLat", "Mock latitude: " + Double.toString(mockLocation.getLatitude()));
+        bundleDebug.putString("mockLong", "Mock longitude: " + Double.toString(mockLocation.getLongitude()));
 
         //mockCoordinatesLat.setText("Mock longitude: " + Double.toString(mockLocation.getLatitude()));
         //mockCoordinatesLong.setText("Mock latitude: " + Double.toString(mockLocation.getLongitude()));
@@ -299,7 +303,7 @@ public class MainActivity extends Activity implements
         Log.d("Dionys","Distance to " + name + " is " + distanceToRemote);
 
         if(distanceToRemote < 500f) {
-            bundle.putString("venue", "You are at: " + name);
+            bundleDebug.putString("venue", "You are at: " + name);
             return true;
         } else {
             return false;
@@ -375,7 +379,10 @@ public class MainActivity extends Activity implements
     public void VenuesResponse(List<Venue> venues){
 
         localVenues = venues;
-
+        ArrayList<Venue> localVenuesClone = new ArrayList<Venue>(localVenues);      //localVenues on list tyyppiä, jota ei voida muuntaa ParcelableArrayListiksi, joten tehdään konversio ja siirretään collection localVenuesista.
+        bundleVenues.putParcelableArrayList("venuesList", localVenuesClone);        //<-- muutettiin Venues luokka implementoimaan Parcelable,
+                                                                                    // jolloin bundleen voidaan pistää taulukko Venue olioita Parcelable muodossa,
+                                                                                    //tällöin bundlella voidaan toimittaa Venue olioita mainactivitystä venues fragmenttiin.
         for(Venue venue : venues) {
             Log.d("Name for venue", venue.getName());
             //db.addVenue(venue);       //sqlite lukemisessa vielä jotain häikkää. Lukeminen tehdään tällä hetkellä suoraan ajon aikaisesta oliokokoelmasta.
@@ -398,11 +405,12 @@ public class MainActivity extends Activity implements
             localUsers.add(user);
         }
 
-        bundle.putStringArrayList("usersAtLocation", usersAtVenue);
+        bundleDebug.putStringArrayList("usersAtLocation", usersAtVenue);
 
-        bundle.putString("pplAmount", Integer.toString(amountAtVenue));
+        bundleDebug.putString("pplAmount", Integer.toString(amountAtVenue));
         //usersTextView.setText(usersTextView.getText() + Integer.toString(amountAtVenue));
-        bundle.putBoolean("asyncDone", true);
+        bundleDebug.putBoolean("asyncDone", true);
+        bundleVenues.putBoolean("asyncDone", true);
     }
 
     public void compareCoordinates(){

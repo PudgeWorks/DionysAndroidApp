@@ -52,7 +52,9 @@ public class FragmentDebug extends Fragment {
                 location.setText(getArguments().getString("venue"));
 
                 for(String user : getArguments().getStringArrayList("usersAtLocation")) {
-                    usersMultiline.append("\n" + user);
+                    Log.d("Henkilöt for loopissa: ", user);
+                    usersMultiline.append(user);
+                    usersMultiline.setText("Helvetti.");
                 }
 
             } else {
