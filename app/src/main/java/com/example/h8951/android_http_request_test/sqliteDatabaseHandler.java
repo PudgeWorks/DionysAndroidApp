@@ -14,7 +14,7 @@ import java.util.List;
  * Created by Eurybus on 11.11.2016.
  */
 
-public class sqliteDatabaseHandler extends SQLiteOpenHelper {
+public class SqliteDatabaseHandler extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 4;
 
@@ -30,7 +30,7 @@ public class sqliteDatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_LATI = "latitude";
     private static final String KEY_LONGI = "longitude";
 
-    public sqliteDatabaseHandler(Context context){
+    public SqliteDatabaseHandler(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

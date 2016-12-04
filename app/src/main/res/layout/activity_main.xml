@@ -10,13 +10,16 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.h8951.android_http_request_test.MainActivity">
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp"
-        android:id="@+id/myText" />
+<!--    <fragment
+    android:name="com.example.h8951.android_http_request_test.FragmentVenues"
+    android:id="@+id/fragment_place"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+-->
 
+    <FrameLayout
+        android:id="@+id/visibleFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></FrameLayout>
 
 </RelativeLayout>
