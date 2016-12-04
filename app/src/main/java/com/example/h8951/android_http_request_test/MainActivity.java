@@ -2,6 +2,8 @@ package com.example.h8951.android_http_request_test;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,9 +14,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.PermissionChecker;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.attr.handle;
 import static android.R.attr.targetSdkVersion;
 
 public class MainActivity extends Activity implements
@@ -42,21 +48,15 @@ public class MainActivity extends Activity implements
 
     JSONObject jsonObject;
     private EditText urlText;
-    private TextView textView;
-    private TextView usersTextView;
-    private EditText usersMultiline;
+
     String response;
+    String debugToBundle;
     String urlVenues = "http://dionys-rest.azurewebsites.net/api/venues";
     String urlUsers = "http://dionys-rest.azurewebsites.net/api/users";
+    String urlInput ="http://dionys-rest.azurewebsites.net/api/input";
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-
-    private TextView mLatitudeText;
-    private TextView mLongitudeText;
-    private TextView mockCoordinatesLat;
-    private TextView mockCoordinatesLong;
-    private TextView location;
 
     private final int REQUEST_LOCATION = 1;
 
@@ -72,31 +72,62 @@ public class MainActivity extends Activity implements
     AsyncFetchData test;
     AsyncFetchData getUsers;
 
+    private float x1,x2;
+    static final int MIN_DISTANCE = 150;
+
+    android.app.FragmentTransaction FragTrans;
+    FragmentManager FragMan;
+
+    FragmentVenues FragVenues = new FragmentVenues();
+    FragmentUsers FragUsers = new FragmentUsers();
+    FragmentDebug FragDebug = new FragmentDebug();
+
+    Bundle bundle = new Bundle();
+
+    boolean bundleSetArgumentsDoOnce = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textView = (TextView) findViewById(R.id.myText);
-        usersTextView = (TextView) findViewById(R.id.users);
-        mockCoordinatesLat = (TextView) findViewById(R.id.mockLat);
-        mockCoordinatesLong = (TextView) findViewById(R.id.mockLong);
-        mLatitudeText = (TextView) findViewById(R.id.latitude);
-        mLongitudeText = (TextView) findViewById(R.id.longitude);
-        usersMultiline = (EditText) findViewById(R.id.usersMultiline);
-        location = (TextView) findViewById(R.id.atVenue);
+
+        bundle.putBoolean("asyncDone", false);
+
+        FragMan = getFragmentManager();
+        FragTrans = FragMan.beginTransaction();
+
+        FragTrans.replace(R.id.visibleFragment, FragDebug );
+        FragTrans.commit();
+
+       /* final ViewGroup viewGroup = (ViewGroup) ((ViewGroup) this
+                .findViewById(android.R.id.content)).getChildAt(0);
+
+        View mainView = viewGroup.getChildAt(0);
+
+        mainView.setOnTouchListener(new OnSwipeTouchListener(this){
+
+            @Override
+            public void onSwipeLeft() {
+                Log.d("Swipe detection:", "HOLY FUCKER YOU SWIPED LEFT");
+            }
+            public void onSwipeRight() {
+                Log.d("Swipe detection:", "HOLY SHITFACE YOU SWIPED RIGHT");
+            }
+        });
+        */
 
         ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
         if (networkInfo != null && networkInfo.isConnected()) {
-            textView.setText("Network connection found!");
+            //textView.setText("Network connection found!");
 
             test = new AsyncFetchData(this);
             test.execute(urlVenues,"venues");
             Log.d("STATUS:", "Out of async for venues.");
 
         } else {
-            textView.setText("No network connection available.");
+            //textView.setText("No network connection available.");
         }
 
         db = new SqliteDatabaseHandler(this);
@@ -126,6 +157,81 @@ public class MainActivity extends Activity implements
                 .addApi(LocationServices.API)
                 .build();
 
+
+        FragTrans = FragMan.beginTransaction();
+        FragTrans.replace(R.id.visibleFragment, FragVenues );
+        FragTrans.commit();
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        switch(event.getAction())
+        {
+            case MotionEvent.ACTION_DOWN:
+                x1 = event.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                x2 = event.getX();
+                break;
+        }
+
+        handleMotion();
+        return super.onTouchEvent(event);
+    }
+
+    public void handleMotion(){
+        float deltaX = x2 - x1;
+        float distanceLeft = 0;
+
+        //liikkunut vasemmalle, tarkistetaan onko tarpeeksi pitkän matkaa swipeksi
+        if (deltaX < 0){
+            distanceLeft = Math.abs(deltaX) + x2;
+        }
+
+        //liikkunut tarpeeksi oikealle, tai liikkunut tarpeeksi vasemmalle ollakseen swipe
+        if (Math.abs(deltaX) > MIN_DISTANCE || distanceLeft > MIN_DISTANCE){
+            if (deltaX > 0){
+                Toast.makeText(this, "left to right swipe", Toast.LENGTH_SHORT).show ();
+                selectFragment(true);
+            } else if (deltaX < 0){
+                Toast.makeText(this, "right to left swipe", Toast.LENGTH_SHORT).show ();
+                selectFragment(false);
+            }
+            else {
+                Toast.makeText(this, "not a swipe", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        else
+        {
+            // consider as something else - a screen tap for example
+        }
+    }
+
+    public void selectFragment(boolean right){
+
+        if (right){
+                                                        //set argumentsia ei voi käyttää useammin kuin kerran yhteen fragmenttiin.
+            if(!bundleSetArgumentsDoOnce){              //Tarkastetaan onko sitä käytetty kerran ja muutetaan kerran asetettuja arvoja
+                FragDebug.setArguments(bundle);         //getArgumentsin kautta jos on.
+                bundleSetArgumentsDoOnce = true;
+            } else {
+                FragDebug.getArguments().putString();
+                FragDebug.getArguments().putString();
+                FragDebug.getArguments().putString();
+                FragDebug.getArguments().putString();
+
+                //KESKEN
+            }
+            FragTrans = FragMan.beginTransaction();
+            FragTrans.replace(R.id.visibleFragment, FragDebug );
+            FragTrans.commit();
+        } else {
+            FragTrans = FragMan.beginTransaction();
+            FragTrans.replace(R.id.visibleFragment, FragVenues );
+            FragTrans.commit();
+        }
     }
 
     @Override
@@ -163,9 +269,10 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onLocationChanged(Location location) {
-
-        mLatitudeText.setText("Latitude: " + location.getLatitude());
-        mLongitudeText.setText("Longitude: " + location.getLongitude());
+        bundle.putString("realLat", "Latitude: " + location.getLatitude());
+        bundle.putString("realLong", "Longitude: " + location.getLongitude());
+        //mLatitudeText.setText("Latitude: " + location.getLatitude());
+        //mLongitudeText.setText("Longitude: " + location.getLongitude());
         currentLocation = location;
 
         //amIthereYet();    //tarvitsee ajastimen sijainnin tarkistusten välillä. Ehkä 10 min?
@@ -178,8 +285,11 @@ public class MainActivity extends Activity implements
         mockLocation.setLatitude(62.2439552);
         mockLocation.setLongitude(25.7482088);
 
-        mockCoordinatesLat.setText("Mock longitude: " + Double.toString(mockLocation.getLatitude()));
-        mockCoordinatesLong.setText("Mock latitude: " + Double.toString(mockLocation.getLongitude()));
+        bundle.putString("mockLat", "Mock latitude: " + Double.toString(mockLocation.getLatitude()));
+        bundle.putString("mockLong", "Mock longitude: " + Double.toString(mockLocation.getLongitude()));
+
+        //mockCoordinatesLat.setText("Mock longitude: " + Double.toString(mockLocation.getLatitude()));
+        //mockCoordinatesLong.setText("Mock latitude: " + Double.toString(mockLocation.getLongitude()));
 
         Location remoteLocation = new Location(name);
         remoteLocation.setLatitude(latitude);
@@ -189,8 +299,7 @@ public class MainActivity extends Activity implements
         Log.d("Dionys","Distance to " + name + " is " + distanceToRemote);
 
         if(distanceToRemote < 500f) {
-            textView.setText("You've arrived to: " + name);
-            location.setText("You are at: " + name);
+            bundle.putString("venue", "You are at: " + name);
             return true;
         } else {
             return false;
@@ -277,16 +386,23 @@ public class MainActivity extends Activity implements
     public void UsersResponse(List<User> users){
 
         int amountAtVenue = 0;
+        ArrayList<String> usersAtVenue = new ArrayList<String>();
 
         for(User user : users) {
             Log.d("Name for user", user.getFname());
             amountAtVenue++;
-            usersMultiline.append("\n" + user.getFname());
+            usersAtVenue.add(user.getFname());
+
+            //usersMultiline.append("\n" + user.getFname());
             //db.addUser(user);         //sqlite lukemisessa vielä jotain häikkää. Lukeminen tehdään tällä hetkellä suoraan ajon aikaisesta oliokokoelmasta.
             localUsers.add(user);
         }
 
-        usersTextView.setText(usersTextView.getText() + Integer.toString(amountAtVenue));
+        bundle.putStringArrayList("usersAtLocation", usersAtVenue);
+
+        bundle.putString("pplAmount", Integer.toString(amountAtVenue));
+        //usersTextView.setText(usersTextView.getText() + Integer.toString(amountAtVenue));
+        bundle.putBoolean("asyncDone", true);
     }
 
     public void compareCoordinates(){
@@ -320,11 +436,10 @@ public class MainActivity extends Activity implements
         User user = localUsers.get(1);
         String currentVenueId = Integer.toString(user.getVenue());
         String venueId = "11";
-        String url = urlUsers;
+        String url = urlInput;
         String user_nick = user.getNick();
         AsyncPutData putData = new AsyncPutData(this);
         putData.execute(url,"nick",user_nick,"venue_key",venueId);
 
     }
-
 }
