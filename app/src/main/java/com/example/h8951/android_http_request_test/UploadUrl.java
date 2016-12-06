@@ -21,7 +21,7 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * Created by Aleksi on 12.11.2016.
+ * Created by Eurybus on 12.11.2016.
  */
 
 public class UploadUrl {

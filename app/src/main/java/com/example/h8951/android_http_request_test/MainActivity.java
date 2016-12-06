@@ -81,12 +81,16 @@ public class MainActivity extends Activity implements
     FragmentVenues FragVenues = new FragmentVenues();
     FragmentUsers FragUsers = new FragmentUsers();
     FragmentDebug FragDebug = new FragmentDebug();
+    FragmentLogin FragLogin = new FragmentLogin();
 
     Bundle bundleDebug = new Bundle();
     Bundle bundleVenues = new Bundle();
 
     boolean bundleSetArgumentsDoOnceDebug = false;
     boolean bundleSetArgumentsDoOnceVenues = false;
+
+    boolean isDown = false;
+    boolean isUp = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,7 +102,7 @@ public class MainActivity extends Activity implements
         FragMan = getFragmentManager();
         FragTrans = FragMan.beginTransaction();
 
-        FragTrans.replace(R.id.visibleFragment, FragDebug );
+        FragTrans.replace(R.id.visibleFragment, FragLogin );
         FragTrans.commit();
 
        /* final ViewGroup viewGroup = (ViewGroup) ((ViewGroup) this
@@ -167,13 +171,18 @@ public class MainActivity extends Activity implements
         {
             case MotionEvent.ACTION_DOWN:
                 x1 = event.getX();
+                isDown = true;
                 break;
             case MotionEvent.ACTION_UP:
                 x2 = event.getX();
+                isUp = true;
                 break;
         }
-
-        handleMotion();
+        if(isDown && isUp){
+            handleMotion();
+            isUp = false;
+            isDown = false;
+        }
         return super.onTouchEvent(event);
     }
 
@@ -181,13 +190,15 @@ public class MainActivity extends Activity implements
         float deltaX = x2 - x1;
         float distanceLeft = 0;
 
-        //liikkunut vasemmalle, tarkistetaan onko tarpeeksi pitkän matkaa swipeksi
-        if (deltaX < 0){
-            distanceLeft = Math.abs(deltaX) + x2;
-        }
+        Log.d("x1: ", ""+ x1);
+        Log.d("x2: ", ""+ x2);
+        Log.d("deltaX: ", ""+ deltaX);
+
+        if(Math.abs(deltaX) > MIN_DISTANCE)
+            Log.d("deltaX", " yli min_distancen");
 
         //liikkunut tarpeeksi oikealle, tai liikkunut tarpeeksi vasemmalle ollakseen swipe
-        if (Math.abs(deltaX) > MIN_DISTANCE || distanceLeft > MIN_DISTANCE){
+        if (Math.abs(deltaX) > MIN_DISTANCE){
             if (deltaX > 0){
                 Toast.makeText(this, "left to right swipe", Toast.LENGTH_SHORT).show ();
                 selectFragment(true);

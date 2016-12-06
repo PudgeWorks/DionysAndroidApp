@@ -59,8 +59,6 @@ public class Venue implements Parcelable {
         this._longi = longi;
     }
 
-
-
     public static final Parcelable.Creator CREATOR =
             new Parcelable.Creator() {
                 public Venue createFromParcel(Parcel in) {
