@@ -1,10 +1,13 @@
 package com.example.h8951.android_http_request_test;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
  * Created by Eurybus on 11.11.2016.
+ * Modified and made Parcelable by H8951 on 4.12.2016
  */
 
 public class Venue implements Parcelable {
@@ -14,6 +17,7 @@ public class Venue implements Parcelable {
     String _name;
     String _desc;
     String _address;
+    int _imageId;
     Double _lati;
     Double _longi;
 
@@ -27,6 +31,24 @@ public class Venue implements Parcelable {
         this._desc = desc;
         this._lati = lati;
         this._longi = longi;
+
+        //temp ratkaisu kuvahaulle. Valmiissa ratkaisussa tulee suoraan kannasta, laiminlyöty suunnitteluvaiheessa
+        //kuvat tällä drawablesta
+
+       /* switch(_name){
+            case "Hemingway's":
+                _imageId = R.drawable.hemppari;
+                break;
+            case "Escape Club":
+                _imageId = R.drawable.esc;
+                break;
+            case "Bra2":
+                _imageId = R.drawable.bra2;
+                break;
+            case "Mutka":
+                _imageId = R.drawable.mutka;
+                break;
+        }*/
     }
     //Overload
     public Venue(String name, String address,String desc, double lati, double longi){
@@ -73,14 +95,11 @@ public class Venue implements Parcelable {
         this._longi = in.readDouble();
 
     }
-    //Adapter constructor, get data from activity
-    public routeSegmentAdapter(Activity context, List<routeSegment> routeSegmentList) {
-        this.routeSegmentList = routeSegmentList;
-        this.context = context;
-        Log.d("routeSegmentAdapter", "started");
+
+    public int getImageId(){
+
+        return _imageId;
     }
-
-
 
     public void setId(int id){ this._id = id;}
     public int getId(){return _id;}

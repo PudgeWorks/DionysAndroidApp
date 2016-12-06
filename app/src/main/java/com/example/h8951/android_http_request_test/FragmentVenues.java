@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -17,6 +19,9 @@ import java.util.ArrayList;
 public class FragmentVenues extends Fragment {
 
     ArrayList<Venue> venues = new ArrayList<Venue>();
+    private RecyclerView venuesRecyclerView;
+    private RecyclerView.Adapter venuesAdapter;
+    private RecyclerView.LayoutManager venuesLayoutManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -37,21 +42,19 @@ public class FragmentVenues extends Fragment {
                 Log.d("async: ", "Async taski ei ehtinyt suoriutua");
             }
         }
-        // fake data
-        final Employees employees = new Employees();
-        employees.initializeData();
-        mEmployeeList = employees.getEmployees();
 
-        // connect recycler view
-        mRecyclerView = (RecyclerView) findViewById(R.id.employeeRecyclerView);
+        venuesRecyclerView = (RecyclerView) view.findViewById(R.id.venuesRecyclerView);
+
+         //connect recycler view
+        venuesRecyclerView = (RecyclerView) view.findViewById(R.id.venuesRecyclerView);
         // create layoutmanager
-        mLayoutManager = new LinearLayoutManager(this);
+        venuesLayoutManager = new LinearLayoutManager(getActivity());
         // set manager to recycler view
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        venuesRecyclerView.setLayoutManager(venuesLayoutManager);
         // create adapter
-        mAdapter = new EmployeesAdapter(mEmployeeList);
+        venuesAdapter = new VenuesAdapter(venues);
         // set adapter to recycler view
-        mRecyclerView.setAdapter(mAdapter);
+        venuesRecyclerView.setAdapter(venuesAdapter);
 
         return view;
     }

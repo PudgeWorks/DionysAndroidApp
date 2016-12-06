@@ -159,11 +159,6 @@ public class MainActivity extends Activity implements
                 .addApi(LocationServices.API)
                 .build();
 
-
-        FragTrans = FragMan.beginTransaction();
-        FragTrans.replace(R.id.visibleFragment, FragVenues );
-        FragTrans.commit();
-
     }
 
     @Override
@@ -225,9 +220,10 @@ public class MainActivity extends Activity implements
             FragTrans.replace(R.id.visibleFragment, FragDebug );
             FragTrans.commit();
         } else {
-            if(!bundleSetArgumentsDoOnceVenues){              //Tarkastetaan onko sitä käytetty kerran ja muutetaan kerran asetettuja arvoja
+            if(!bundleSetArgumentsDoOnceVenues){
+                bundleSetArgumentsDoOnceVenues = true;          //Tarkastetaan onko sitä käytetty kerran ja muutetaan kerran asetettuja arvoja
                 FragVenues.setArguments(bundleVenues);         //getArgumentsin kautta jos on.
-                bundleSetArgumentsDoOnceVenues = true;
+
             } else {
                 FragVenues.getArguments().putAll(bundleVenues);
             }
@@ -411,6 +407,8 @@ public class MainActivity extends Activity implements
         //usersTextView.setText(usersTextView.getText() + Integer.toString(amountAtVenue));
         bundleDebug.putBoolean("asyncDone", true);
         bundleVenues.putBoolean("asyncDone", true);
+        Log.d("UsersResponse: ", "Bundle putit tehty");
+
     }
 
     public void compareCoordinates(){

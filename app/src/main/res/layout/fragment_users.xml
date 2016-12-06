@@ -10,4 +10,10 @@
         android:text="This is the Users fragment."
         android:textStyle="bold"/>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/usersRecyclerView"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 </LinearLayout>
