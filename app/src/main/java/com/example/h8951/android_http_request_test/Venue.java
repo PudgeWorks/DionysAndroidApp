@@ -13,13 +13,13 @@ import android.os.Parcelable;
 public class Venue implements Parcelable {
 
     //private variables
-    int _id;
-    String _name;
-    String _desc;
-    String _address;
-    int _imageId;
-    Double _lati;
-    Double _longi;
+    private int _id;
+    private String _name;
+    private String _desc;
+    private String _address;
+    private int _imageId;
+    private Double _lati;
+    private Double _longi;
 
     public Venue(){}
 

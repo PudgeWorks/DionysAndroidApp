@@ -25,6 +25,7 @@ import java.util.List;
         private String debugString4 = "nodo";
         private String debugString5 = "doro";
         boolean isVenues;
+        String callType;
         Exception ex;
         private JSONConverter converter = new JSONConverter();
         private String JSONData;
@@ -51,11 +52,13 @@ import java.util.List;
                 JSONData = testi.downloadUrl(params[0]);
                 debugString = JSONData;
 
+                callType = params[1];
+
                 if(params[1] == "venues"){
                     isVenues = true;
                     debugString3 = "Calling converto to Venues from doinbackground...";
                     localVenues = converter.convertJSONToVenue(JSONData);
-                } else if (params[1] == "users"){
+                } else if (params[1] == "users" || params[1] == "allUsers"){
                     isVenues = false;
                     debugString3 = "Calling converto to Users from doinbackground...";
                     localUsers = converter.convertJSONToUser(JSONData);
@@ -94,7 +97,11 @@ import java.util.List;
             if(isVenues) {
                 connectorToMainActivity.VenuesResponse(localVenues);
             } else {
-                connectorToMainActivity.UsersResponse(localUsers);
+                if(callType == "users"){
+                    connectorToMainActivity.UsersResponse(localUsers);
+                } else if(callType == "allUsers"){
+                    connectorToMainActivity.AllUsersResponse(localUsers);
+                }
             }
             context.runOnUiThread(new Runnable() {
 

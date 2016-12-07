@@ -68,7 +68,7 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No voi nyt vittu."
+        android:text="Testing..."
         android:inputType="textMultiLine"
         android:ems="10"
         android:id="@+id/usersMultiline"
@@ -80,7 +80,7 @@
         android:layout_below="@+id/usersMultiline"
         android:layout_alignParentStart="true"
         android:id="@+id/DemoLocationChange_btn"
-        android:text="Mein neger"
+        android:text="POST testi"
         android:onClick="demoButtonClicked"/>
 
 </LinearLayout>

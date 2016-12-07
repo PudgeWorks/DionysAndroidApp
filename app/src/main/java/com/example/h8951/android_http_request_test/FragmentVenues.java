@@ -22,6 +22,10 @@ public class FragmentVenues extends Fragment {
     private RecyclerView venuesRecyclerView;
     private RecyclerView.Adapter venuesAdapter;
     private RecyclerView.LayoutManager venuesLayoutManager;
+    private MainActivity _context;
+
+    public FragmentVenues(){
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -44,7 +48,6 @@ public class FragmentVenues extends Fragment {
         }
 
         venuesRecyclerView = (RecyclerView) view.findViewById(R.id.venuesRecyclerView);
-
          //connect recycler view
         venuesRecyclerView = (RecyclerView) view.findViewById(R.id.venuesRecyclerView);
         // create layoutmanager
@@ -52,7 +55,7 @@ public class FragmentVenues extends Fragment {
         // set manager to recycler view
         venuesRecyclerView.setLayoutManager(venuesLayoutManager);
         // create adapter
-        venuesAdapter = new VenuesAdapter(venues);
+        venuesAdapter = new VenuesAdapter(venues, ((MainActivity) getActivity()));
         // set adapter to recycler view
         venuesRecyclerView.setAdapter(venuesAdapter);
 

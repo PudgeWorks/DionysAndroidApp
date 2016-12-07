@@ -37,14 +37,16 @@ import com.google.firebase.storage.UploadTask;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.R.attr.handle;
 import static android.R.attr.targetSdkVersion;
 
 public class MainActivity extends Activity implements
-    ConnectionCallbacks, OnConnectionFailedListener, LocationListener, JSONResponse {
+    ConnectionCallbacks, OnConnectionFailedListener, LocationListener, JSONResponse, UsersInterface {
 
     JSONObject jsonObject;
     private EditText urlText;
@@ -64,13 +66,18 @@ public class MainActivity extends Activity implements
 
     Location currentLocation;
     Location mockLocation = new Location("MockLocation");
+
     //Test stuff
     Venue testVenue;
+
     List<User> localUsers = new ArrayList<>();
     List<Venue> localVenues = new ArrayList<>();
 
-    AsyncFetchData test;
+    ArrayList<User> allUsers = new ArrayList<>();
+
+    AsyncFetchData getVenues;
     AsyncFetchData getUsers;
+    AsyncFetchData getAllUsers;
 
     private float x1,x2;
     static final int MIN_DISTANCE = 150;
@@ -85,9 +92,11 @@ public class MainActivity extends Activity implements
 
     Bundle bundleDebug = new Bundle();
     Bundle bundleVenues = new Bundle();
+    Bundle bundleUsers = new Bundle();
 
     boolean bundleSetArgumentsDoOnceDebug = false;
     boolean bundleSetArgumentsDoOnceVenues = false;
+    boolean bundleSetArgumentsDoOnceUsers = false;
 
     boolean isDown = false;
     boolean isUp = false;
@@ -128,8 +137,12 @@ public class MainActivity extends Activity implements
         if (networkInfo != null && networkInfo.isConnected()) {
             //textView.setText("Network connection found!");
 
-            test = new AsyncFetchData(this);
-            test.execute(urlVenues,"venues");
+            getVenues = new AsyncFetchData(this);
+            getVenues.execute(urlVenues,"venues");
+
+            getAllUsers = new AsyncFetchData(this);
+            getAllUsers.execute(urlUsers, "allUsers");
+
             Log.d("STATUS:", "Out of async for venues.");
 
         } else {
@@ -389,7 +402,7 @@ public class MainActivity extends Activity implements
         ArrayList<Venue> localVenuesClone = new ArrayList<Venue>(localVenues);      //localVenues on list tyyppiä, jota ei voida muuntaa ParcelableArrayListiksi, joten tehdään konversio ja siirretään collection localVenuesista.
         bundleVenues.putParcelableArrayList("venuesList", localVenuesClone);        //<-- muutettiin Venues luokka implementoimaan Parcelable,
                                                                                     // jolloin bundleen voidaan pistää taulukko Venue olioita Parcelable muodossa,
-                                                                                    //tällöin bundlella voidaan toimittaa Venue olioita mainactivitystä venues fragmenttiin.
+                                                                                    // tällöin bundlella voidaan toimittaa Venue olioita mainactivitystä venues fragmenttiin.
         for(Venue venue : venues) {
             Log.d("Name for venue", venue.getName());
             //db.addVenue(venue);       //sqlite lukemisessa vielä jotain häikkää. Lukeminen tehdään tällä hetkellä suoraan ajon aikaisesta oliokokoelmasta.
@@ -418,8 +431,16 @@ public class MainActivity extends Activity implements
         //usersTextView.setText(usersTextView.getText() + Integer.toString(amountAtVenue));
         bundleDebug.putBoolean("asyncDone", true);
         bundleVenues.putBoolean("asyncDone", true);
+        bundleUsers.putBoolean("asyncDone", true);
         Log.d("UsersResponse: ", "Bundle putit tehty");
 
+    }
+
+    public void AllUsersResponse(List<User>users){                                                  //vastaanottaa AsyncFetchDatasta kaikki käyttäjät ja tuo ne main threadin saataville
+        ArrayList<User> allUsersClone = new ArrayList<User>(users);                                 //tyyppimuunnos listasta arraylistaksi
+        allUsers = allUsersClone;
+        bundleUsers.putBoolean("asyncDone", true);
+        sortUsersToVenues();
     }
 
     public void compareCoordinates(){
@@ -449,6 +470,64 @@ public class MainActivity extends Activity implements
         }
 
     }
+
+    public void sortUsersToVenues(){
+
+        User[][] usersInVenues = new User[localVenues.size()][100];
+        List<List<User>> usersInVenues2 = new ArrayList<List<User>>();
+        List<User>[] arrayOfLists = new List[localVenues.size()];
+
+        int i = 0;
+        int j = 0;
+
+        ArrayList<Venue> venuesWithUsersIn = new ArrayList<Venue>();
+
+        for(Venue venue : localVenues){
+            //usersInVenues2.add(new ArrayList<User>());
+            //arrayOfLists[i] = new ArrayList<User>();
+            for(User user : allUsers){
+                if(user.getVenue() == venue.getId()) {
+                    Log.d("Venuessa " + venue.getName(), " on henkilö: " + user.getNick());
+                    venuesWithUsersIn.add(venue);
+                    usersInVenues[i][j] = user;
+                    //usersInVenues2.iterator().next().add
+                    //arrayOfLists[i].add(user);
+                }
+                j++;
+            }
+            i++;
+        }
+
+        ArrayList<User> temp;
+
+        for(User[] userArray : usersInVenues){
+        //for(List<User> userArray : arrayOfLists){
+            temp  = new ArrayList<User>(Arrays.asList(userArray));
+            //temp = new ArrayList<User>(userArray);
+            try{
+                bundleUsers.putParcelableArrayList(venuesWithUsersIn.iterator().next().getName(), temp);
+            } catch(Exception ex){
+                Log.d("sortUsersToVenues: ", "No more venues with users. Array out of bounds.");
+            }
+        }
+    }
+
+    public void activateAndPopulateUsersFragment(){
+
+        if(!bundleSetArgumentsDoOnceUsers){
+            bundleSetArgumentsDoOnceUsers = true;          //Tarkastetaan onko sitä käytetty kerran ja muutetaan kerran asetettuja arvoja
+            FragUsers.setArguments(bundleUsers);         //getArgumentsin kautta jos on.
+
+        } else {
+            FragUsers.getArguments().putAll(bundleUsers);
+        }
+
+        FragTrans = FragMan.beginTransaction();
+        FragTrans.replace(R.id.visibleFragment, FragUsers );
+        FragTrans.commit();
+
+    }
+
     public void demoButtonClicked(View view){
         User user = localUsers.get(1);
         String currentVenueId = Integer.toString(user.getVenue());

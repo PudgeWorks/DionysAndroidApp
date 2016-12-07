@@ -9,4 +9,5 @@ import java.util.List;
 public interface JSONResponse {
     void VenuesResponse(List<Venue> venues);
     void UsersResponse(List<User> users);
+    void AllUsersResponse(List<User> users);
 }

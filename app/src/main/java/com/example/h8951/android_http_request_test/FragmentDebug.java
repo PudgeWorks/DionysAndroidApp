@@ -54,7 +54,7 @@ public class FragmentDebug extends Fragment {
                 for(String user : getArguments().getStringArrayList("usersAtLocation")) {
                     Log.d("Henkilöt for loopissa: ", user);
                     usersMultiline.append(user);
-                    usersMultiline.setText("Helvetti.");
+                    usersMultiline.setText("Testing Testing...");
                 }
 
             } else {

@@ -1,5 +1,7 @@
 package com.example.h8951.android_http_request_test;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -27,10 +29,13 @@ public class VenuesAdapter extends RecyclerView.Adapter<VenuesAdapter.ViewHolder
     private Bitmap rsHemmari;
     private Bitmap rsMutka;
 
+    UsersInterface connectorToMainActivity;
+    MainActivity _context;
 
     // adapter constructor, get data from activity
-    public VenuesAdapter(List<Venue> venuesList) {
+    public VenuesAdapter(List<Venue> venuesList, MainActivity context) {
         this.venuesList = venuesList;
+        _context = context;
     }
 
     // return the size of employeeList (invoked by the layout manager)
@@ -112,8 +117,11 @@ public class VenuesAdapter extends RecyclerView.Adapter<VenuesAdapter.ViewHolder
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
-                    String name = venuesList.get(position)._name;
+                    String name = venuesList.get(position).getName();
                     Toast.makeText(view.getContext(), name, Toast.LENGTH_SHORT).show();
+
+                    connectorToMainActivity = _context;
+                    connectorToMainActivity.activateAndPopulateUsersFragment();
                 }
             });
         }
