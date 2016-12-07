@@ -22,14 +22,19 @@ import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by Eurybus on 12.11.2016.
+ * Legacy luokka ei enään käyttöä
  */
 
 public class UploadUrl {
 
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-    // the web page content as a InputStream, which it returns as
-    // a string.
-
+    /**
+     *
+     * @param myurl RESTin controllerin url
+     * @param key kenttä, jonka arvoa halutaan muokata
+     * @param value kentän arvo
+     * @return Pitäisi palautta HTTP status code
+     * @throws IOException
+     */
     public String uploadUrl(String myurl, String key, String value) throws IOException {
         HttpURLConnection conn = null;
         OutputStream outputPost;

@@ -114,22 +114,6 @@ public class MainActivity extends Activity implements
         FragTrans.replace(R.id.visibleFragment, FragLogin );
         FragTrans.commit();
 
-       /* final ViewGroup viewGroup = (ViewGroup) ((ViewGroup) this
-                .findViewById(android.R.id.content)).getChildAt(0);
-
-        View mainView = viewGroup.getChildAt(0);
-
-        mainView.setOnTouchListener(new OnSwipeTouchListener(this){
-
-            @Override
-            public void onSwipeLeft() {
-                Log.d("Swipe detection:", "HOLY FUCKER YOU SWIPED LEFT");
-            }
-            public void onSwipeRight() {
-                Log.d("Swipe detection:", "HOLY SHITFACE YOU SWIPED RIGHT");
-            }
-        });
-        */
 
         ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -153,21 +137,6 @@ public class MainActivity extends Activity implements
 
         //How many venues do we have
         Log.d("Number of venues", Integer.toString(db.getVenueCount()));
-
-        //Read first venue
-        //Venue venue = db.getVenue(1);
-        //testVenue = venue;
-        //Log.d("One venue", venue.getName() + "|" + venue.getDescription() );
-        //Reading all venues
-        //Log.d("Reading", "Reading all venues..");
-        //localVenues = db.getAllVenues();
-
-        /*for(Venue vn: venues){
-            String log = "Id: " + vn.getId() + ", Name: " + vn.getName()
-                    + ", Description: " + vn.getDescription() + ", Address: " + vn.getAddress()
-                    + ", Latitude: " + vn.getLatitude() + ", Longitude: " + vn.getLongitude();
-            Log.d("Venues: ",log);
-        }*/
 
         //Build google Play services client
         mGoogleApiClient = new GoogleApiClient.Builder(this)

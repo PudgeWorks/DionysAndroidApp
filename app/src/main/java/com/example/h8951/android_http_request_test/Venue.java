@@ -32,23 +32,6 @@ public class Venue implements Parcelable {
         this._lati = lati;
         this._longi = longi;
 
-        //temp ratkaisu kuvahaulle. Valmiissa ratkaisussa tulee suoraan kannasta, laiminlyöty suunnitteluvaiheessa
-        //kuvat tällä drawablesta
-
-       /* switch(_name){
-            case "Hemingway's":
-                _imageId = R.drawable.hemppari;
-                break;
-            case "Escape Club":
-                _imageId = R.drawable.esc;
-                break;
-            case "Bra2":
-                _imageId = R.drawable.bra2;
-                break;
-            case "Mutka":
-                _imageId = R.drawable.mutka;
-                break;
-        }*/
     }
     //Overload
     public Venue(String name, String address,String desc, double lati, double longi){

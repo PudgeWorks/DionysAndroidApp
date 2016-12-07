@@ -16,22 +16,23 @@ import java.net.ProtocolException;
 import java.net.URL;
 
 /**
- * Created by Aleksi on 12.11.2016.
+ * Created by Eurybus on 12.11.2016.
  */
 
 public class PutUploadUrl {
 
 
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-    // the web page content as a InputStream, which it returns as
-    // a string.
-
+    /**
+     *
+     * @param myurl RESTin controllerin url
+     * @param nick Avain: Käyttäjän nimimerkki
+     * @param nick_actual Avaimen arvo
+     * @param key Muutettavan arvon avain
+     * @param value Muutettava arvo
+     * @throws IOException
+     */
     public void uploadUrl(String myurl, String nick, String nick_actual, String key, String value) throws IOException {
         InputStream is = null;
-        String result = "";
-        // Only display the first 1500 characters of the retrieved
-        // web page content.
-        int len = 1500;
 
         try {
             URL url = new URL(myurl);
@@ -57,23 +58,7 @@ public class PutUploadUrl {
             out.close();
             connection.getInputStream();
 
-            //connection.
-            /*HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            // Starts the query
-            conn.connect();
-            int response = conn.getResponseCode();
-            is = conn.getInputStream();
 
-            // Convert the InputStream into a string
-            String contentAsString = readIt(is, len);
-            return contentAsString;*/
-
-            // Makes sure that the InputStream is closed after the app is
-            // finished using it.
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (ProtocolException ex) {
@@ -84,6 +69,7 @@ public class PutUploadUrl {
         catch (JSONException e) {
             e.printStackTrace();
         } finally {
+            // Varmistetaan, että InputStream suljetaan
             if (is != null) {
                 is.close();
             }

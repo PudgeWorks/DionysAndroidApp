@@ -14,6 +14,10 @@ import java.util.List;
  * Created by Eurybus on 11.11.2016.
  */
 
+/**
+ * Luokka locaalin SQLite kannan käyttöä varten.
+ * Nykyisessä versiossa, tätä ei kuitenkaan käytetä
+ */
 public class SqliteDatabaseHandler extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 4;

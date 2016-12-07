@@ -20,25 +20,6 @@ public class JSONConverter {
 
     protected List<Venue> convertJSONToVenue(String JSONData) throws JSONException
     {
-        //JSONObject jsonObj = new JSONObject(JSONData);
-        //JSONArray jsonArray = new JSONArray("Venue");                     //Säilytetään jatkokehitystä varten
-        //JSONArray jsonArray = jsonObj.getJSONArray("Venue");
-
-        //List<Venue> venues = new ArrayList<>();
-
-        /*for(int i = 0;i<jsonArray.length();i++)
-        {
-            int id = jsonArray.getJSONObject(i).getInt("Id");
-            String name = jsonArray.getJSONObject(i).getString("name");
-            String address = jsonArray.getJSONObject(i).getString("address");
-            String desc = jsonArray.getJSONObject(i).getString("description");
-            double lati = jsonArray.getJSONObject(i).getDouble("latitude");
-            double longi = jsonArray.getJSONObject(i).getDouble("longitude");
-
-            venues.add(new Venue(id, name, address, desc, lati, longi));
-        }
-        venues.add(new Venue(1, "asd", "asd", "ad",1,1));
-       // return venues; */
 
         JSONArray jsonArray = new JSONArray(JSONData);
 
